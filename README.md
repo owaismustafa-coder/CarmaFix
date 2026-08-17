@@ -61,3 +61,4 @@ The app includes a working contextual demo assistant. It uses safe local fallbac
 
 ## Appearance
 Carma Fix now includes Light, Dark and System modes in Settings. iOS uses `expo-blur` for the Liquid Glass-inspired material surfaces; Android uses a stable translucent fallback under Expo SDK 54.
+
