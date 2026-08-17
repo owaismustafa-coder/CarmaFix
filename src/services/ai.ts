@@ -1,0 +1,13 @@
+import {Job,Vehicle} from '@/types';
+export type AIContext={vehicle?:Vehicle;job?:Job;language:'en'|'ar'};
+const danger=['brake','smoke','overheat','fuel','steering','fire','فرامل','دخان','حرارة','بنزين','وقود','دركسون'];
+export async function askCarmaAI(message:string,ctx:AIContext):Promise<string>{
+ const endpoint=process.env.EXPO_PUBLIC_AI_PROXY_URL;
+ if(endpoint){try{const r=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message,context:ctx})});if(r.ok){const j=await r.json();if(j?.reply)return j.reply}}catch{}}
+ const ar=ctx.language==='ar', m=message.toLowerCase(), vehicle=ctx.vehicle?`${ctx.vehicle.year} ${ctx.vehicle.brand} ${ctx.vehicle.model}`:(ar?'سيارتج':'your vehicle');
+ if(danger.some(x=>m.includes(x)))return ar?'هذا العارض ممكن يكون خطير. وقفي السيارة بمكان آمن إذا تقدرين، لا تكمّلين القيادة، واطلبي ونش من Carma Fix. التشخيص النهائي لازم يكون من فني معتمد.':'This symptom may be safety-critical. Stop in a safe place if possible, avoid continuing to drive, and request Carma Fix recovery. A qualified technician should confirm the diagnosis.';
+ if(m.includes('estimate')||m.includes('price')||m.includes('cost')||m.includes('سعر')||m.includes('تكلفة'))return ar?`أقدر أشرح لج عرض السعر خطوة بخطوة لـ ${vehicle}. عادةً نفصل القطع، العمالة، الرسوم والضريبة حتى تعرفين بالضبط مقابل شنو تدفعين.`:`I can explain the estimate for ${vehicle} line by line. Carma Fix separates parts, labour, fees and VAT so you can see exactly what you are approving.`;
+ if(m.includes('battery')||m.includes('start')||m.includes('بطارية')||m.includes('تشتغل'))return ar?`إذا ${vehicle} ما تشتغل أو التشغيل ضعيف، أكثر الاحتمالات شيوعاً البطارية، الدينمو أو السلف. أقدر أوجّهج لفحص البطارية أو طلب ونش إذا السيارة ما تتحرك.`:`If ${vehicle} will not start or cranks weakly, common causes include the battery, alternator or starter. I can guide you to a battery check or recovery if the car cannot move.`;
+ if(m.includes('track')||m.includes('where')||m.includes('وين')||m.includes('تتبع'))return ar?`حالة الخدمة الحالية: ${ctx.job?.status||'لا توجد خدمة نشطة'}. من شاشة الخدمات تقدرين تتابعين الونش، وصول السيارة للكراج، التشخيص، الموافقة والإصلاح.`:`Current service status: ${ctx.job?.status||'no active service'}. The Jobs screen tracks recovery, garage arrival, diagnosis, approval and repair progress.`;
+ return ar?`أنا Carma AI. أقدر أساعدج في فهم أعطال ${vehicle}، اختيار الخدمة المناسبة، شرح عرض السعر، وتتبع الإصلاح. وصفي لي شنو تحسين أو شنو ظاهر في السيارة.`:`I’m Carma AI. I can help explain symptoms on ${vehicle}, suggest the right service category, clarify estimates and track repairs. Tell me what the car is doing or what warning you see.`;
+}

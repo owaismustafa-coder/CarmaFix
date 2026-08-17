@@ -1,0 +1,6 @@
+import {Tabs} from 'expo-router';
+import {Ionicons} from '@expo/vector-icons';
+import {useApp} from '@/context/AppContext';
+import {t} from '@/lib/i18n';
+import {useTheme} from '@/theme';
+export default function TabsLayout(){const {language}=useApp();const {theme}=useTheme();const icons:any={index:'home',services:'construct',map:'navigate-circle',jobs:'receipt',settings:'person-circle'};const labels:any={index:t(language,'home'),services:language==='ar'?'الخدمات':'Services',map:t(language,'map'),jobs:t(language,'jobs'),settings:t(language,'settings')};return <Tabs screenOptions={({route})=>({headerShown:false,tabBarActiveTintColor:theme.primary,tabBarInactiveTintColor:theme.muted2,tabBarStyle:{position:'absolute',left:10,right:10,bottom:12,height:72,paddingTop:8,paddingBottom:8,borderTopWidth:0,borderWidth:1,borderColor:theme.glassBorder,borderRadius:25,backgroundColor:theme.tab,elevation:14,shadowColor:theme.shadow,shadowOffset:{width:0,height:8},shadowOpacity:.16,shadowRadius:24},tabBarLabelStyle:{fontSize:8.5,fontWeight:'800'},tabBarIcon:({color,focused})=><Ionicons name={focused?icons[route.name]:`${icons[route.name]}-outline` as any} color={color} size={focused?23:21}/>})}>{['index','services','map','jobs','settings'].map(name=><Tabs.Screen key={name} name={name} options={{title:labels[name]}}/>)}</Tabs>}
